@@ -5,21 +5,12 @@
 #include <fstream>
 #include <string_view>
 
+#include "bf.h"
+
 void usage() {
     std::cerr << "USAGE" << std::endl;
     exit(1);
 }
-
-enum InstrType {
-    INSTR_LEFT,
-    INSTR_RIGHT,
-    INSTR_PLUS,
-    INSTR_MINUS,
-    INSTR_WRITE,
-    INSTR_READ,
-    INSTR_LOOPL,
-    INSTR_LOOPR,
-};
 
 int charToInstrType(char c, InstrType& t) {
     switch(c) {
@@ -84,4 +75,7 @@ int main(int argc, char **argv) {
         usage();
 
     readFile(argv[optind], instrs);
+
+    VM vm(instrs, memSize);
+    vm.run();
 }

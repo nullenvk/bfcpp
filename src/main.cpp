@@ -1,0 +1,87 @@
+#include <iostream>
+#include <vector>
+#include <unistd.h>
+#include <cstdlib>
+#include <fstream>
+#include <string_view>
+
+void usage() {
+    std::cerr << "USAGE" << std::endl;
+    exit(1);
+}
+
+enum InstrType {
+    INSTR_LEFT,
+    INSTR_RIGHT,
+    INSTR_PLUS,
+    INSTR_MINUS,
+    INSTR_WRITE,
+    INSTR_READ,
+    INSTR_LOOPL,
+    INSTR_LOOPR,
+};
+
+int charToInstrType(char c, InstrType& t) {
+    switch(c) {
+        case '<': t = INSTR_LEFT; break;
+        case '>': t = INSTR_RIGHT; break;
+        case '+': t = INSTR_PLUS; break;
+        case '-': t = INSTR_MINUS; break;
+        case '.': t = INSTR_WRITE; break;
+        case ',': t = INSTR_READ; break;
+        case '[': t = INSTR_LOOPL; break;
+        case ']': t = INSTR_LOOPR; break;
+        default: return 1;
+    }
+
+    return 0;
+}
+
+int readFile(const char *filename, std::vector<InstrType>& data) {
+    char ch;
+    InstrType type;
+
+    std::fstream fin(filename, std::fstream::in);
+    while(fin >> std::noskipws >> ch)
+        if(charToInstrType(ch, type) == 0)
+            data.push_back(type);
+
+    return 0;
+}
+
+bool isNumber(std::string_view str) {
+    for(char c : str)
+        if(!std::isdigit(c)) return false;
+
+    return true;
+}
+
+int main(int argc, char **argv) {
+    size_t memSize = 30000; // Cell count
+    std::vector<InstrType> instrs;
+
+    for(;;) {
+        switch(getopt(argc, argv, "m:")) {
+            case 'm':
+                if(!isNumber(optarg))
+                    usage();
+                
+                memSize = atoll(optarg);
+                continue;
+
+            default:
+                usage();
+                break;
+
+            case -1:
+                break;
+        }
+
+        break;
+    }
+
+    if(optind != argc - 1)
+        usage();
+
+    readFile(argv[optind], instrs);
+}

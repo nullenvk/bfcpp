@@ -7,8 +7,10 @@
 
 #include "bf.h"
 
+const char *PROG_NAME;
+
 void usage() {
-    std::cerr << "USAGE" << std::endl;
+    std::cerr << PROG_NAME << " [-m memory_cells] filename" << std::endl;
     exit(1);
 }
 
@@ -50,6 +52,8 @@ bool isNumber(std::string_view str) {
 int main(int argc, char **argv) {
     size_t memSize = 30000; // Cell count
     std::vector<InstrType> instrs;
+
+    PROG_NAME = argv[0];
 
     for(;;) {
         switch(getopt(argc, argv, "m:")) {

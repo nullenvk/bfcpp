@@ -14,30 +14,38 @@ void usage() {
     exit(1);
 }
 
-int charToInstrType(char c, InstrType& t) {
+int charToInstr(char c, BF_Instr& t) {
     switch(c) {
-        case '<': t = INSTR_LEFT; break;
-        case '>': t = INSTR_RIGHT; break;
-        case '+': t = INSTR_PLUS; break;
-        case '-': t = INSTR_MINUS; break;
-        case '.': t = INSTR_WRITE; break;
-        case ',': t = INSTR_READ; break;
-        case '[': t = INSTR_LOOPL; break;
-        case ']': t = INSTR_LOOPR; break;
+        case '<': t = BF_LEFT; break;
+        case '>': t = BF_RIGHT; break;
+        case '+': t = BF_PLUS; break;
+        case '-': t = BF_MINUS; break;
+        case '.': t = BF_WRITE; break;
+        case ',': t = BF_READ; break;
+        case '[': t = BF_LOOPL; break;
+        case ']': t = BF_LOOPR; break;
         default: return 1;
     }
 
     return 0;
 }
 
-int readFile(const char *filename, std::vector<InstrType>& data) {
+void readStream(std::istream& str, std::vector<BF_Instr>& data) {
     char ch;
-    InstrType type;
+    BF_Instr type;
 
-    std::fstream fin(filename, std::fstream::in);
-    while(fin >> std::noskipws >> ch)
-        if(charToInstrType(ch, type) == 0)
+    while(str >> std::noskipws >> ch)
+        if(charToInstr(ch, type) == 0)
             data.push_back(type);
+}
+
+int readFile(const char *filename, std::vector<BF_Instr>& data) {
+    std::filebuf f;
+    if(!f.open(filename, std::ios::in))
+        return 1;
+
+    std::istream str(&f);
+    readStream(str, data);
 
     return 0;
 }
@@ -51,7 +59,7 @@ bool isNumber(std::string_view str) {
 
 int main(int argc, char **argv) {
     size_t memSize = 30000; // Cell count
-    std::vector<InstrType> instrs;
+    std::vector<BF_Instr> instrs;
 
     PROG_NAME = argv[0];
 

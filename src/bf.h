@@ -3,19 +3,10 @@
 #include <cstdint>
 #include <stack>
 
-enum InstrType {
-    INSTR_LEFT,
-    INSTR_RIGHT,
-    INSTR_PLUS,
-    INSTR_MINUS,
-    INSTR_WRITE,
-    INSTR_READ,
-    INSTR_LOOPL,
-    INSTR_LOOPR,
-};
+#include "parser.h"
 
 class VM {
-    const std::vector<InstrType> code;
+    const std::vector<BF_Instr> code;
     uint8_t *mem;
     size_t memSize;
 
@@ -25,7 +16,7 @@ class VM {
     void loopL();
     void loopR();
 public:
-    VM(const std::vector<InstrType> code, size_t memSize);
+    VM(const std::vector<BF_Instr> code, size_t memSize);
     ~VM();
     void run();
 };

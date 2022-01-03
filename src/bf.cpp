@@ -1,7 +1,7 @@
 #include "bf.h"
 #include <cstdio>
     
-VM::VM(const std::vector<InstrType> code, size_t memSize) : code(code) {
+VM::VM(const std::vector<BF_Instr> code, size_t memSize) : code(code) {
     this->mem = new uint8_t[memSize];
 }
 
@@ -24,8 +24,8 @@ void VM::loopL() {
 
         cp++;
         while(depth != 0) {
-            if(code[cp] == INSTR_LOOPL) depth++;
-            else if(code[cp] == INSTR_LOOPR) depth--;
+            if(code[cp] == BF_LOOPL) depth++;
+            else if(code[cp] == BF_LOOPR) depth--;
             cp++;
 
             if(cp >= code.size() || cp < 0)
@@ -46,8 +46,8 @@ void VM::loopR() {
     int depth = 1;
     while(depth != 0) {
         cp--;
-        if(code[cp] == INSTR_LOOPL) depth--;
-        else if(code[cp] == INSTR_LOOPR) depth++;
+        if(code[cp] == BF_LOOPL) depth--;
+        else if(code[cp] == BF_LOOPR) depth++;
             
         if(cp >= code.size() || cp < 0)
             return;
@@ -57,41 +57,41 @@ void VM::loopR() {
 void VM::run() {
     while(1) {
         switch(code[cp]) {
-            case INSTR_LEFT:
+            case BF_LEFT:
                 mpMove(-1);
                 cp++;
                 break;
 
-            case INSTR_RIGHT:
+            case BF_RIGHT:
                 mpMove(1);
                 cp++;
                 break;
 
-            case INSTR_PLUS:
+            case BF_PLUS:
                 mem[mp]++;
                 cp++;
                 break;
             
-            case INSTR_MINUS:
+            case BF_MINUS:
                 mem[mp]--;
                 cp++;
                 break;
 
-            case INSTR_WRITE:
+            case BF_WRITE:
                 putchar(mem[mp]);
                 cp++;
                 break;
 
-            case INSTR_READ:
+            case BF_READ:
                 mem[mp] = getchar();
                 cp++;
                 break;
 
-            case INSTR_LOOPL:
+            case BF_LOOPL:
                 loopL();
                 break;
             
-            case INSTR_LOOPR:
+            case BF_LOOPR:
                 loopR();
                 break;
         }

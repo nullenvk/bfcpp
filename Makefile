@@ -3,7 +3,7 @@ CXXFLAGS := $(CFLAGS) -std=c++17
 LDFLAGS :=
 
 BIN := bfcpp 
-OBJ := src/main.o src/bf.o src/parser.o src/ir.o
+OBJ := src/main.o src/bf.o src/ir.o
 
 all: $(BIN)
 

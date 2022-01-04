@@ -1,9 +1,9 @@
 CFLAGS := -fstack-protector-strong -O2 -pipe
 CXXFLAGS := $(CFLAGS) -std=c++17
-LDFLAGS := -lm 
+LDFLAGS :=
 
 BIN := bf 
-OBJ := src/main.o src/bf.o
+OBJ := src/main.o src/bf.o src/parser.o
 
 all: $(BIN)
 

@@ -1,4 +1,6 @@
 #pragma once
+#include <istream>
+#include <vector>
 
 enum BF_Instr{
     BF_LEFT,
@@ -11,3 +13,4 @@ enum BF_Instr{
     BF_LOOPR,
 };
 
+void BF_parseStream(std::istream& str, std::vector<BF_Instr>& data);

@@ -2,7 +2,7 @@
 #include <istream>
 #include <vector>
 
-enum BF_Instr{
+enum BF_Instr {
     BF_LEFT,
     BF_RIGHT,
     BF_PLUS,

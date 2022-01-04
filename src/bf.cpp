@@ -1,15 +1,15 @@
 #include "bf.h"
 #include <cstdio>
     
-VM::VM(const std::vector<BF_Instr> code, size_t memSize) : code(code) {
+BFVM::BFVM(const std::vector<BF_Instr> code, size_t memSize) : code(code) {
     this->mem = new uint8_t[memSize];
 }
 
-VM::~VM() {
+BFVM::~BFVM() {
     delete this->mem;
 }
 
-void VM::mpMove(int size) {
+void BFVM::mpMove(int size) {
     mp += size;
 
     if(mp < 0)
@@ -18,7 +18,7 @@ void VM::mpMove(int size) {
         mp = mp % memSize;
 }
 
-void VM::loopL() {
+void BFVM::loopL() {
     if(mem[mp] == 0) {
         int depth = 1;
 
@@ -37,7 +37,7 @@ void VM::loopL() {
     }
 }
 
-void VM::loopR() {
+void BFVM::loopR() {
     if(mem[mp] == 0) {
         cp++;
         return;
@@ -54,7 +54,7 @@ void VM::loopR() {
     }
 }
 
-void VM::run() {
+void BFVM::run() {
     while(1) {
         switch(code[cp]) {
             case BF_LEFT:

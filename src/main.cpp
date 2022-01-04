@@ -63,6 +63,6 @@ int main(int argc, char **argv) {
 
     readFile(argv[optind], instrs);
 
-    VM vm(instrs, memSize);
+    BFVM vm(instrs, memSize);
     vm.run();
 }

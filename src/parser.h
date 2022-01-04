@@ -2,15 +2,17 @@
 #include <istream>
 #include <vector>
 
-enum BF_Instr {
-    BF_LEFT,
-    BF_RIGHT,
-    BF_PLUS,
-    BF_MINUS,
-    BF_WRITE,
-    BF_READ,
-    BF_LOOPL,
-    BF_LOOPR,
-};
+namespace BF {
+    enum Instr {
+        LEFT,
+        RIGHT,
+        PLUS,
+        MINUS,
+        WRITE,
+        READ,
+        LOOPL,
+        LOOPR,
+    };
 
-void BF_parseStream(std::istream& str, std::vector<BF_Instr>& data);
+    void parseStream(std::istream& str, std::vector<Instr>& data);
+}

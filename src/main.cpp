@@ -14,13 +14,13 @@ void usage() {
     exit(1);
 }
 
-int readFile(const char *filename, std::vector<BF_Instr>& data) {
+int readFile(const char *filename, std::vector<BF::Instr>& data) {
     std::filebuf f;
     if(!f.open(filename, std::ios::in))
         return 1;
 
     std::istream str(&f);
-    BF_parseStream(str, data);
+    BF::parseStream(str, data);
 
     return 0;
 }
@@ -34,7 +34,7 @@ bool isNumber(std::string_view str) {
 
 int main(int argc, char **argv) {
     size_t memSize = 30000; // Cell count
-    std::vector<BF_Instr> instrs;
+    std::vector<BF::Instr> instrs;
 
     PROG_NAME = argv[0];
 

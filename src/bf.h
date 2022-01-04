@@ -6,7 +6,7 @@
 #include "parser.h"
 
 class BFVM {
-    const std::vector<BF_Instr> code;
+    const std::vector<BF::Instr> code;
     uint8_t *mem;
     size_t memSize;
 
@@ -16,7 +16,7 @@ class BFVM {
     void loopL();
     void loopR();
 public:
-    BFVM(const std::vector<BF_Instr> code, size_t memSize);
+    BFVM(const std::vector<BF::Instr> code, size_t memSize);
     ~BFVM();
     void run();
 };

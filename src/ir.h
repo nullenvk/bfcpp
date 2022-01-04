@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "parser.h"
+#include "bf.h"
 
 namespace IR {
     struct Atom;

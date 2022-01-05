@@ -70,13 +70,15 @@ void Tree::parseBF(std::vector<BF::Instr> bfi) {
         switch(*it) {
             case BF::LEFT:
             case BF::RIGHT:
-                node->atoms.push_back(Instr(IR::Instr::MOVE, optimizeRes.second));
+                if(optimizeRes.second != 0) // Optimization when command is equal to NOP
+                    node->atoms.push_back(Instr(IR::Instr::MOVE, optimizeRes.second));
                 it += optimizeRes.first;
                 break;
                 
             case BF::PLUS:
             case BF::MINUS:
-                node->atoms.push_back(Instr(IR::Instr::ADD, optimizeRes.second));
+                if(optimizeRes.second != 0) // Optimization when command is equal to NOP
+                    node->atoms.push_back(Instr(IR::Instr::ADD, optimizeRes.second));
                 it += optimizeRes.first;
                 break;
 

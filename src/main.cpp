@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "bf.h"
+#include "ir.h"
 
 const char *PROG_NAME;
 
@@ -63,6 +64,32 @@ int main(int argc, char **argv) {
 
     readFile(argv[optind], instrs);
 
-    BF::VM vm(instrs, memSize);
-    vm.run();
+    //BF::VM vm(instrs, memSize);
+    //vm.run();
+    
+    IR::Tree ir;
+    ir.parseBF(instrs);
+
+    // Print out first level atoms (debug)
+    for(auto a : ir.atoms) {
+        if(a.type == IR::Atom::INSTR) {
+            switch(a.instr.type) {
+                case IR::Instr::ADD:
+                case IR::Instr::MOVE:
+                    std::cout << (a.instr.type == IR::Instr::ADD ? "Add " : "Move ")  << a.instr.param << std::endl;
+                    break;
+
+                case IR::Instr::WRITE:
+                case IR::Instr::READ:
+                    std::cout << (a.instr.type == IR::Instr::WRITE ? "Write " : "Read ") << std::endl;
+                    break;
+
+                case IR::Instr::_INVALID:
+                    std::cout << "???" << std::endl;
+                    break;
+            }
+        } else {
+            std::cout << "[LOOP]" << std::endl;
+        }
+    }
 }

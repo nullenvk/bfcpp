@@ -18,20 +18,27 @@ namespace IR {
             MOVE,
             READ,
             WRITE,
-        };
+            _INVALID
+        } type;
 
         int param; // for ADD, MOVE
+
+        Instr();
+        Instr(Type t);
+        Instr(Type t, int param);
     };
 
     struct Atom {
         enum Type {
             LOOP,
             INSTR
-        };
+        } type;
 
-        union {
-            Instr instr;
-            Tree loop;
-        };
+        Instr instr;
+        Tree loop;
+
+        Atom(Instr instr);
+        Atom(Tree loop);
+        ~Atom();
     };
 }

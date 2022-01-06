@@ -7,6 +7,7 @@
 
 #include "bf.h"
 #include "ir.h"
+#include "vm.h"
 
 const char *PROG_NAME;
 
@@ -31,6 +32,36 @@ bool isNumber(std::string_view str) {
         if(!std::isdigit(c)) return false;
 
     return true;
+}
+
+// Remove Later
+void irDebugPrint(const IR::Tree ir, int depth) {
+    for(auto a : ir.atoms) {
+        for(int i = 0; i < depth; i++)
+            std::cout << " ";
+        
+        if(a.type == IR::Atom::INSTR) {
+            switch(a.instr.type) {
+                case IR::Instr::ADD:
+                case IR::Instr::MOVE:
+                    std::cout << (a.instr.type == IR::Instr::ADD ? "Add " : "Move ")  << a.instr.param << std::endl;
+                    break;
+
+                case IR::Instr::WRITE:
+                case IR::Instr::READ:
+                    std::cout << (a.instr.type == IR::Instr::WRITE ? "Write " : "Read ") << std::endl;
+                    break;
+
+                case IR::Instr::_INVALID:
+                    std::cout << "???" << std::endl;
+                    break;
+            }
+        } else {
+            std::cout << "[LOOP]" << std::endl;
+            irDebugPrint(a.loop, depth + 4);
+            std::cout << "[END OF LOOP]" << std::endl;
+        }
+    }
 }
 
 int main(int argc, char **argv) {
@@ -63,33 +94,11 @@ int main(int argc, char **argv) {
         usage();
 
     readFile(argv[optind], instrs);
-
-    //BF::VM vm(instrs, memSize);
-    //vm.run();
     
     IR::Tree ir;
     ir.parseBF(instrs);
-
-    // Print out first level atoms (debug)
-    for(auto a : ir.atoms) {
-        if(a.type == IR::Atom::INSTR) {
-            switch(a.instr.type) {
-                case IR::Instr::ADD:
-                case IR::Instr::MOVE:
-                    std::cout << (a.instr.type == IR::Instr::ADD ? "Add " : "Move ")  << a.instr.param << std::endl;
-                    break;
-
-                case IR::Instr::WRITE:
-                case IR::Instr::READ:
-                    std::cout << (a.instr.type == IR::Instr::WRITE ? "Write " : "Read ") << std::endl;
-                    break;
-
-                case IR::Instr::_INVALID:
-                    std::cout << "???" << std::endl;
-                    break;
-            }
-        } else {
-            std::cout << "[LOOP]" << std::endl;
-        }
-    }
+    //irDebugPrint(ir, 0);
+    
+    VM vm(ir, memSize);
+    vm.run();
 }

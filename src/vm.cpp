@@ -42,6 +42,7 @@ void VM::run() {
                 case IR::Instr::MOVE:   mpAdd(instr.param); break;
                 case IR::Instr::READ:   mem[mp] = getchar(); break;
                 case IR::Instr::WRITE:  putchar(mem[mp]); break;
+                case IR::Instr::CLEAR:  mem[mp] = 0; break;
 
                 case IR::Instr::_INVALID: break; // Maybe add warning messages?
             }

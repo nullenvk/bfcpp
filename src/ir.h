@@ -6,7 +6,10 @@
 namespace IR {
     struct Atom;
 
-    struct Tree {
+    class Tree {
+        bool isEquivToClear();
+        void optimizeClear();
+    public:
         std::vector<Atom> atoms;
 
         void parseBF(std::vector<BF::Instr>);
@@ -18,6 +21,8 @@ namespace IR {
             MOVE,
             READ,
             WRITE,
+            CLEAR,
+
             _INVALID
         } type;
 
@@ -40,5 +45,7 @@ namespace IR {
         Atom(Instr instr);
         Atom(Tree loop);
         ~Atom();
+
+        void clean();
     };
 }

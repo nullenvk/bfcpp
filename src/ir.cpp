@@ -28,8 +28,13 @@ Atom::Atom(Tree loop) {
     this->loop = loop;
 }
 
-Atom::~Atom() {
+void Atom::clean() {
+    if(this->type == Atom::LOOP)
+        this->loop.atoms.clear();
+}
 
+Atom::~Atom() {
+    clean();
 }
 
 std::pair<size_t, int> instrSubstrOptimize(std::vector<BF::Instr>::iterator it) {
@@ -55,6 +60,41 @@ std::pair<size_t, int> instrSubstrOptimize(std::vector<BF::Instr>::iterator it) 
     }
 
     return std::pair(len, sum);
+}
+
+bool Tree::isEquivToClear() {
+    if(this->atoms.size() == 1)
+        if(this->atoms[0].type == Atom::INSTR) 
+            return this->atoms[0].instr.type == Instr::ADD && abs(this->atoms[0].instr.param) == 1;
+
+    return false;
+}
+
+void Tree::optimizeClear() {
+    std::stack<std::pair<Tree*, int> > recursion;
+    recursion.push(std::pair(this, 0));
+
+    while(!recursion.empty()) {
+        Tree *node = recursion.top().first;
+        int& i = recursion.top().second;
+
+        Atom& a = node->atoms[i];
+
+        if(a.type == IR::Atom::LOOP)
+            if(a.loop.isEquivToClear()) {
+                a.clean();
+                a.type = Atom::INSTR;
+                a.instr.type = IR::Instr::CLEAR;
+            } else {
+                i++;
+                recursion.push(std::pair(&a.loop, 0));
+            }
+        else
+            i++;
+
+        if(i >= node->atoms.size())
+            recursion.pop();
+    }
 }
 
 void Tree::parseBF(std::vector<BF::Instr> bfi) {
@@ -104,4 +144,6 @@ void Tree::parseBF(std::vector<BF::Instr> bfi) {
                 break;
         }
     }
+
+    optimizeClear();
 }

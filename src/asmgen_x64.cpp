@@ -35,7 +35,7 @@ void genStartLoop(std::ostream& out, RecursionStack rec) {
 }
 
 void genEndLoop(std::ostream& out, RecursionStack rec) {
-    out << "jnz " << recursionToLoopName(rec) << std::endl;
+    out << "loop " << recursionToLoopName(rec) << std::endl;
 }
 
 void AsmGen_x64::gen(std::ostream& out, const IR::Tree ir) {

@@ -2,3 +2,4 @@
 bfcpp
 compile_commands.json
 *.o
+out.s

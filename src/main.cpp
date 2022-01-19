@@ -100,9 +100,6 @@ int main(int argc, char **argv) {
     IR::Tree ir;
     ir.parseBF(instrs);
     
-    //VM vm(ir, memSize);
-    //vm.run();
-    
     std::ofstream outf("out.s");
     std::streambuf *outs(outf.rdbuf());
     std::ostream outo(outs);

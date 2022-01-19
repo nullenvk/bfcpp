@@ -9,6 +9,8 @@
 #include "ir.h"
 #include "vm.h"
 
+#include "asmgen_x64.h"
+
 const char *PROG_NAME;
 
 void usage() {
@@ -97,8 +99,14 @@ int main(int argc, char **argv) {
     
     IR::Tree ir;
     ir.parseBF(instrs);
-    //irDebugPrint(ir, 0);
     
-    VM vm(ir, memSize);
-    vm.run();
+    //VM vm(ir, memSize);
+    //vm.run();
+    
+    std::ofstream outf("out.s");
+    std::streambuf *outs(outf.rdbuf());
+    std::ostream outo(outs);
+    
+    AsmGen_x64 gen;
+    gen.gen(outo, ir);
 }

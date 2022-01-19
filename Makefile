@@ -3,7 +3,8 @@ CXXFLAGS := $(CFLAGS) -std=c++17
 LDFLAGS :=
 
 BIN := bfcpp 
-OBJ := src/main.o src/bf.o src/ir.o src/vm.o
+OBJ := src/main.o src/bf.o src/ir.o src/vm.o \
+       src/asmgen_x64.o
 
 all: $(BIN)
 

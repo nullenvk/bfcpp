@@ -38,6 +38,43 @@ void genEndLoop(std::ostream& out, RecursionStack rec) {
     out << "loop " << recursionToLoopName(rec) << std::endl;
 }
 
+void genAdd(std::ostream& out, int param) {
+    out << "add rcx, " << param << std::endl;
+}
+
+void genMove(std::ostream& out, int param) {
+    out << "mov [rsi], rcx" << std::endl
+        << "add rsi, " << param << std::endl
+        << "mov rcx, [rsi]" << std::endl;
+}
+
+void genClear(std::ostream& out) {
+    out << "xor rcx, rcx" << std::endl;
+}
+
+void genInstruction(std::ostream& out, IR::Instr instr) {
+    switch(instr.type) {
+        case IR::Instr::ADD:
+            genAdd(out, instr.param);
+            break;
+
+        case IR::Instr::MOVE:
+            genMove(out, instr.param);
+            break;
+
+        case IR::Instr::CLEAR:
+            genClear(out);
+            break;
+
+        case IR::Instr::READ:
+        case IR::Instr::WRITE:
+            // TODO
+            break;
+
+        case IR::Instr::_INVALID: break;
+    }
+}
+
 void AsmGen_x64::gen(std::ostream& out, const IR::Tree ir) {
     genPrologue(out);
 
@@ -60,9 +97,10 @@ void AsmGen_x64::gen(std::ostream& out, const IR::Tree ir) {
             continue;
         }
 
-        if(node->atoms[pos].type == IR::Atom::INSTR)
+        if(node->atoms[pos].type == IR::Atom::INSTR) {
+            genInstruction(out, node->atoms[pos].instr);
             pos++;
-        else {
+        } else {
             genStartLoop(out, recursion);
             recursion.push_back(std::pair(&node->atoms[pos].loop, 0));
         }

@@ -2,19 +2,47 @@
 
 #include <sstream>
 
-// This generator assumes NASM syntax
-// bfmain accepts cell address in rax
+// This generator assumes NASM syntax and Linux OS
 
 typedef std::deque< std::pair<const IR::Tree*, size_t> > RecursionStack; // size_t - position
 
-void genPrologue(std::ostream& out) {
-    out << "SECTION .text" << std::endl
-        << "global bfmain" << std::endl
-        << "bfmain:"       << std::endl;
+void genPrologue(std::ostream& out, size_t memSize) {
+    out << "global _start" << std::endl
+
+        << "SECTION .bss" << std::endl
+        << "bfbuff resq " << memSize << std::endl
+
+        << "SECTION .text" << std::endl
+
+        << "bfwrite:" << std::endl
+        << "push rsi" << std::endl
+        << "mov [rsp-8], rcx" << std::endl
+        << "mov rax, 1" << std::endl
+        << "mov rdi, 1" << std::endl
+        << "mov rsi, [rsp-8]" << std::endl
+        << "mov rdx, 1" << std::endl
+        << "syscall" << std::endl
+        << "pop rsi" << std::endl
+        << "ret" << std::endl
+        
+        << "_start:" << std::endl
+
+        // Initialize bfbuff
+        << "mov rcx, " << memSize << std::endl
+        << "xor rax, rax" << std::endl
+        << "bfbuff_init: " << std::endl
+        << "mov [bfbuff + (rcx - 1) * 8], rax" << std::endl
+        << "loop bfbuff_init" << std::endl
+        << "" << std::endl
+
+        << "mov rcx, 0" << std::endl
+        << "mov rsi, bfbuff" << std::endl;
 }
 
 void genEpilogue(std::ostream& out) {
-    out << "ret" << std::endl;
+    out << "mov rax, 60" << std::endl
+        << "xor rdi, rdi" << std::endl
+        << "syscall" << std::endl;
 }
 
 std::string recursionToLoopName(RecursionStack rec) {
@@ -35,7 +63,8 @@ void genStartLoop(std::ostream& out, RecursionStack rec) {
 }
 
 void genEndLoop(std::ostream& out, RecursionStack rec) {
-    out << "loop " << recursionToLoopName(rec) << std::endl;
+    out << "cmp rcx, 0" << std::endl
+        << "jnz " << recursionToLoopName(rec) << std::endl;
 }
 
 void genAdd(std::ostream& out, int param) {
@@ -44,12 +73,16 @@ void genAdd(std::ostream& out, int param) {
 
 void genMove(std::ostream& out, int param) {
     out << "mov [rsi], rcx" << std::endl
-        << "add rsi, " << param << std::endl
+        << "add rsi, " << param * 8 << std::endl
         << "mov rcx, [rsi]" << std::endl;
 }
 
 void genClear(std::ostream& out) {
     out << "xor rcx, rcx" << std::endl;
+}
+
+void genWrite(std::ostream& out) {
+    out << "call bfwrite" << std::endl;
 }
 
 void genInstruction(std::ostream& out, IR::Instr instr) {
@@ -66,8 +99,11 @@ void genInstruction(std::ostream& out, IR::Instr instr) {
             genClear(out);
             break;
 
-        case IR::Instr::READ:
         case IR::Instr::WRITE:
+            genWrite(out);
+            break;
+
+        case IR::Instr::READ:
             // TODO
             break;
 
@@ -76,7 +112,7 @@ void genInstruction(std::ostream& out, IR::Instr instr) {
 }
 
 void AsmGen_x64::gen(std::ostream& out, const IR::Tree ir) {
-    genPrologue(out);
+    genPrologue(out, memSize);
 
     // Tree recursion
     RecursionStack recursion;

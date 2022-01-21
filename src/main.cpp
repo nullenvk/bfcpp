@@ -104,6 +104,6 @@ int main(int argc, char **argv) {
     std::streambuf *outs(outf.rdbuf());
     std::ostream outo(outs);
     
-    AsmGen_x64 gen;
+    AsmGen_x64 gen(memSize);
     gen.gen(outo, ir);
 }

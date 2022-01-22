@@ -48,10 +48,8 @@ void genEpilogue(std::ostream& out) {
         << "syscall" << std::endl;
 }
 
-std::string recursionToLoopName(RecursionStack rec) {
+std::string recursionToLoopSuffix(RecursionStack rec) {
     std::stringstream ns;
-
-    ns << "loop";
 
     while(!rec.empty()) {
         ns << "_" << std::to_string(rec.front().second);
@@ -62,12 +60,20 @@ std::string recursionToLoopName(RecursionStack rec) {
 }
 
 void genStartLoop(std::ostream& out, RecursionStack rec) {
-    out << recursionToLoopName(rec) << ":" << std::endl;
+    std::string sfx = recursionToLoopSuffix(rec);
+
+    out << "l_" << sfx << ":" << std::endl
+        << "test rcx, rcx" << std::endl
+        << "jz e_" << sfx << std::endl;
+        
 }
 
 void genEndLoop(std::ostream& out, RecursionStack rec) {
-    out << "test rcx, rcx" << std::endl
-        << "jnz " << recursionToLoopName(rec) << std::endl;
+    std::string sfx = recursionToLoopSuffix(rec);
+
+    out << "e_" << sfx << ":" << std::endl
+        << "test rcx, rcx" << std::endl
+        << "jnz l_" << sfx << std::endl;
 }
 
 void genAdd(std::ostream& out, int param) {

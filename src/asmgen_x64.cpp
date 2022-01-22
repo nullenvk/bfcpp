@@ -16,12 +16,15 @@ void genPrologue(std::ostream& out, size_t memSize) {
 
         << "bfwrite:" << std::endl
         << "push rsi" << std::endl
+        << "push rcx" << std::endl
         << "mov [rsp-8], rcx" << std::endl
         << "mov rax, 1" << std::endl
         << "mov rdi, 1" << std::endl
-        << "mov rsi, [rsp-8]" << std::endl
+        << "mov rsi, rsp" << std::endl
+        << "sub rsi, 8" << std::endl
         << "mov rdx, 1" << std::endl
         << "syscall" << std::endl
+        << "pop rcx" << std::endl
         << "pop rsi" << std::endl
         << "ret" << std::endl
         
@@ -63,7 +66,7 @@ void genStartLoop(std::ostream& out, RecursionStack rec) {
 }
 
 void genEndLoop(std::ostream& out, RecursionStack rec) {
-    out << "cmp rcx, 0" << std::endl
+    out << "test rcx, rcx" << std::endl
         << "jnz " << recursionToLoopName(rec) << std::endl;
 }
 

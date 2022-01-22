@@ -36,49 +36,24 @@ bool isNumber(std::string_view str) {
     return true;
 }
 
-// Remove Later
-void irDebugPrint(const IR::Tree ir, int depth) {
-    for(auto a : ir.atoms) {
-        for(int i = 0; i < depth; i++)
-            std::cout << " ";
-        
-        if(a.type == IR::Atom::INSTR) {
-            switch(a.instr.type) {
-                case IR::Instr::ADD:
-                case IR::Instr::MOVE:
-                    std::cout << (a.instr.type == IR::Instr::ADD ? "Add " : "Move ")  << a.instr.param << std::endl;
-                    break;
-
-                case IR::Instr::WRITE:
-                case IR::Instr::READ:
-                    std::cout << (a.instr.type == IR::Instr::WRITE ? "Write " : "Read ") << std::endl;
-                    break;
-
-                case IR::Instr::_INVALID:
-                    std::cout << "???" << std::endl;
-                    break;
-            }
-        } else {
-            std::cout << "[LOOP]" << std::endl;
-            irDebugPrint(a.loop, depth + 4);
-            std::cout << "[END OF LOOP]" << std::endl;
-        }
-    }
-}
-
 int main(int argc, char **argv) {
     size_t memSize = 30000; // Cell count
     std::vector<BF::Instr> instrs;
 
     PROG_NAME = argv[0];
+    std::string outFile("out.s");
 
     for(;;) {
-        switch(getopt(argc, argv, "m:")) {
+        switch(getopt(argc, argv, "m:o:")) {
             case 'm':
                 if(!isNumber(optarg))
                     usage();
                 
                 memSize = atoll(optarg);
+                continue;
+
+            case 'o':
+                outFile = std::string(optarg);
                 continue;
 
             default:
@@ -95,12 +70,15 @@ int main(int argc, char **argv) {
     if(optind != argc - 1)
         usage();
 
-    readFile(argv[optind], instrs);
+    if(readFile(argv[optind], instrs)) {
+        std::cerr << "Fatal error: Cannot open the file" << std::endl;
+        usage();
+    }
     
     IR::Tree ir;
     ir.parseBF(instrs);
     
-    std::ofstream outf("out.s");
+    std::ofstream outf(outFile);
     std::streambuf *outs(outf.rdbuf());
     std::ostream outo(outs);
     

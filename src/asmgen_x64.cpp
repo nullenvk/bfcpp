@@ -28,6 +28,17 @@ void genPrologue(std::ostream& out, size_t memSize) {
         << "pop rsi" << std::endl
         << "ret" << std::endl
         
+        << "bfread:" << std::endl
+        << "push rsi" << std::endl
+        << "mov rax, 0" << std::endl
+        << "mov rdi, 1" << std::endl
+        << "mov rsi, rsp" << std::endl
+        << "sub rsi, 8" << std::endl
+        << "mov rdx, 1" << std::endl
+        << "syscall" << std::endl
+        << "mov rcx, [rsp-8]" << std::endl
+        << "pop rsi" << std::endl
+        << "ret" << std::endl
         << "_start:" << std::endl
 
         // Initialize bfbuff
@@ -94,6 +105,10 @@ void genWrite(std::ostream& out) {
     out << "call bfwrite" << std::endl;
 }
 
+void genRead(std::ostream& out) {
+    out << "call bfread" << std::endl;
+}
+
 void genInstruction(std::ostream& out, IR::Instr instr) {
     switch(instr.type) {
         case IR::Instr::ADD:
@@ -113,7 +128,7 @@ void genInstruction(std::ostream& out, IR::Instr instr) {
             break;
 
         case IR::Instr::READ:
-            // TODO
+            genRead(out);
             break;
 
         case IR::Instr::_INVALID: break;
